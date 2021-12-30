@@ -1,10 +1,10 @@
 %% renaming files
-% author: Dorien van Blooijs
-% date: May 2021
+% author: Dorien van Blooijs, Eline Schaft
+% date: December 2021
 
 clc
 clear
-myDataPath = setLocalDataPath(1);
+[myDataPath,cfg] = setLocalDataPath(1);
 
 %% load key for renaming:
 % this file should be named key.xlsx, and in the first column, it should
@@ -31,6 +31,14 @@ for i = 1:size(fileList,1)
             
             [nameDir, nameFile, nameExt] = fileparts(fileList{i});
             
+            % Copy original to  folder 'Original'
+            pathOriginal = [nameDir, '/Original'];
+            if ~exist(pathOriginal,'dir')
+                mkdir(pathOriginal)
+            end
+            fileOriginal = fullfile(pathOriginal,[nameFile, nameExt]);
+            copyfile(fileList{i},fileOriginal);
+
             indivkey = key{j,1}; renamekey = key{j,2};
             renameFileVar(fileList{i},indivkey,renamekey)
             
