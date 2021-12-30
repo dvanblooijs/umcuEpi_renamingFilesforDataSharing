@@ -62,7 +62,7 @@ elseif strcmp(nameExt,'.TRC')
 
     % Check whether subj_surname1 and subj_name1
     if ~contains(subj_surname1,indivkey) || ~contains(subj_name1,indivkey)
-        error('The TRC belongs to ')
+        error('The TRC belongs to another patient. Check the name and identity of the TRC file.')
     end
     % Fill spaces of surname  and name with  blanks
     fseek(fid,64,-1); fwrite(fid,blanks(22),'char');
