@@ -1,4 +1,4 @@
-function renameFileVar(filename,indivkey,renamekey)
+function renameFileVar(filename,indivkey,renamekey,checkTRC)
 % author: Dorien van Blooijs, Eline  Schaft
 % December 2021
 
@@ -51,8 +51,9 @@ elseif strcmp(nameExt,'.mat')
     % save file
     save(filename,'-struct','Variable')
     
-elseif strcmp(nameExt,'.TRC')
-
+elseif strcmp(nameExt,'.TRC') && checkTRC
+    
+    
     % load TRC
     [fid,~] = fopen(filename,'r+');
 
@@ -76,7 +77,7 @@ elseif strcmp(nameExt,'.TRC')
     fclose(fid);
 
 else
-    warning('Variables in %s have not been renamed, since it is not added yet')
+    warning('Variables in %s have not been renamed, since it is not added yet',nameExt)
 end
 
 

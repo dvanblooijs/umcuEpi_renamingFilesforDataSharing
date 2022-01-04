@@ -20,6 +20,16 @@ fileList = getAllFiles(dirName);
 
 %% rename variables containing the name and move them to new named directory
 
+% Make sure the user wants to annonimize TRC files when they are in the
+% fileList. In principle only BIDS-format files are shared. 
+checkTRC = 0;
+if any(strcmp(fileList,'.TRC'))
+    replyTRC = input('In principle only BIDS-format files are shared. \nAre you sure you want to rename .TRC files? [y/n]: ','s');
+    if strcmp(replyTRC,'y')
+        checkTRC =  1;
+    end
+end
+
 % run through all files
 for i = 1:size(fileList,1)
     
@@ -40,7 +50,7 @@ for i = 1:size(fileList,1)
             copyfile(fileList{i},fileOriginal);
 
             indivkey = key{j,1}; renamekey = key{j,2};
-            renameFileVar(fileList{i},indivkey,renamekey)
+            renameFileVar(fileList{i},indivkey,renamekey,checkTRC)
             
             % move file to new location
             newname = replace(fileList{i},key{j,1},key{j,2});
