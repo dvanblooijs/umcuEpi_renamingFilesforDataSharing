@@ -1,10 +1,10 @@
 %% renaming files
-% author: Dorien van Blooijs, Eline Schaft
-% date: December 2021
+% author: Dorien van Blooijs
+% date: May 2021
 
 clc
 clear
-[myDataPath,cfg] = setLocalDataPath(1);
+myDataPath = setLocalDataPath(1);
 
 %% load key for renaming:
 % this file should be named key.xlsx, and in the first column, it should
@@ -20,16 +20,6 @@ fileList = getAllFiles(dirName);
 
 %% rename variables containing the name and move them to new named directory
 
-% Make sure the user wants to annonimize TRC files when they are in the
-% fileList. In principle only BIDS-format files are shared. 
-checkTRC = 0;
-if any(strcmp(fileList,'.TRC'))
-    replyTRC = input('In principle only BIDS-format files are shared. \nAre you sure you want to rename .TRC files? [y/n]: ','s');
-    if strcmp(replyTRC,'y')
-        checkTRC =  1;
-    end
-end
-
 % run through all files
 for i = 1:size(fileList,1)
     
@@ -41,16 +31,8 @@ for i = 1:size(fileList,1)
             
             [nameDir, nameFile, nameExt] = fileparts(fileList{i});
             
-            % Copy original to  folder 'Original'
-            pathOriginal = [nameDir, '/Original'];
-            if ~exist(pathOriginal,'dir')
-                mkdir(pathOriginal)
-            end
-            fileOriginal = fullfile(pathOriginal,[nameFile, nameExt]);
-            copyfile(fileList{i},fileOriginal);
-
             indivkey = key{j,1}; renamekey = key{j,2};
-            renameFileVar(fileList{i},indivkey,renamekey,checkTRC)
+            renameFileVar(fileList{i},indivkey,renamekey)
             
             % move file to new location
             newname = replace(fileList{i},key{j,1},key{j,2});
