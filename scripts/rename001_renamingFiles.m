@@ -4,7 +4,7 @@
 
 clc
 clear
-myDataPath = setLocalDataPath(1);
+[myDataPath,cfg] = setLocalDataPath(1);
 
 %% load key for renaming:
 % this file should be named key.xlsx, and in the first column, it should
