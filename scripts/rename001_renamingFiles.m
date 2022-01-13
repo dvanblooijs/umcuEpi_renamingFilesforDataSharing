@@ -23,9 +23,9 @@ fileList = getAllFiles(dirName);
 % Make sure the user wants to annonimize TRC files when they are in the
 % fileList. In principle only BIDS-format files are shared. 
 checkTRC = 0;
-if any(strcmp(fileList,'.TRC'))
-    replyTRC = input('In principle only BIDS-format files are shared. \nAre you sure you want to rename .TRC files? [y/n]: ','s');
-    if strcmp(replyTRC,'y')
+if any(contains(fileList,'.TRC'))
+    replyTRC = input('NOTE: Only BIDS-format files should be shared. \nAre you sure you want to rename .TRC files? [y/n]: ','s');
+    if strcmpi(replyTRC,'y')
         checkTRC =  1;
     end
 end
@@ -54,7 +54,7 @@ for i = 1:size(fileList,1)
             end
             
             movefile(fileList{i},newname)
-            
+%              copyfile(fileList{i},newname)
             % if directory is empty, delete directory
             if isempty(getAllFiles(nameDir))
                 rmdir(nameDir)
