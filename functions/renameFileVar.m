@@ -84,7 +84,7 @@ elseif strcmp(nameExt,'.json')
 
         else
 
-            if isstring(Variable.(allFields{i})) % if it is a double etc. , than it cannot contain the original name of the patient
+            if isstring(Variable.(allFields{i})) || ischar(Variable.(allFields{i})) % if it is a double etc. , than it cannot contain the original name of the patient
                 idx = contains(Variable.(allFields{i}),indivkey);
                 Variable.(allFields{i})(idx) = replace(Variable.(allFields{i})(idx),indivkey,renamekey);
             end

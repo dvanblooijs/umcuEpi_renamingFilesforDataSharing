@@ -32,13 +32,15 @@ end
 
 % run through all files
 for i = 1:size(fileList,1)
-    
+    foundKey = 0;
+
     % run through all keys
     for j=1:size(key,1)
         
         % find matching key
         if contains(fileList(i),key(j,1))
-            
+            foundKey = 1; % in case there is a matching key
+
             [nameDir, nameFile, nameExt] = fileparts(fileList{i});
             
             indivkey = key{j,1}; renamekey = key{j,2};
@@ -53,13 +55,16 @@ for i = 1:size(fileList,1)
                 mkdir(newnameDir)
             end
             
-            movefile(fileList{i},newname)
-%              copyfile(fileList{i},newname)
+%             movefile(fileList{i},newname)
+             copyfile(fileList{i},newname)
             % if directory is empty, delete directory
-            if isempty(getAllFiles(nameDir))
-                rmdir(nameDir)
-            end
+%             if isempty(getAllFiles(nameDir))
+%                 rmdir(nameDir)
+%             end
         end
+    end
+    if foundKey == 0 % there is no original patient name in the filename, but we need to check whether there are no patient names within the file (for example in participants.tsv)
+        renameFileContent(fileList{i},key)
     end
 end
 
