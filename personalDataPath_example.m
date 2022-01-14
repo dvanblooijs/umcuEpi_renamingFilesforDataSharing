@@ -8,6 +8,10 @@ function [localDataPath,cfg] = personalDataPath_example()
 
 localDataPath.shareFolder = '/directory/with/data/to/share/';
 
+% use this if you want to convert electrode positions to a standard brain
+% (MNI space) electrode positions
+localDataPath.freesurfer = '/directory/to/folder/with/derivatives/freesurfer/';
+
 % % % set paths
 fieldtrip_folder  = '/directory/to/fieldtrip/';
 % % copy the private folder in fieldtrip to somewhere else
