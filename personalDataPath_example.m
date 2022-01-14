@@ -16,6 +16,10 @@ addpath(fieldtrip_folder)
 addpath(fieldtrip_private)
 ft_defaults
 
+jsonlab_folder = '/directory/to/jsonlab/';
+addpath(jsonlab_folder)
+
+
 %% name recognizable part of a file of which the content should be evaluated
 
 cfg(1).filename = {'electrodes.tsv'};
