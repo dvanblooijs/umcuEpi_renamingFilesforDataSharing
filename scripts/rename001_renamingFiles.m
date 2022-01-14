@@ -30,6 +30,10 @@ if any(contains(fileList,'.TRC'))
     end
 end
 
+% remove the key.xlsx from the fileList to be converted
+idx = contains(fileList,'key');
+fileList(idx) = [];
+
 % run through all files
 for i = 1:size(fileList,1)
     foundKey = 0;
@@ -55,12 +59,14 @@ for i = 1:size(fileList,1)
                 mkdir(newnameDir)
             end
             
-%             movefile(fileList{i},newname)
-             copyfile(fileList{i},newname)
+            movefile(fileList{i},newname)
+%              copyfile(fileList{i},newname)
+
             % if directory is empty, delete directory
-%             if isempty(getAllFiles(nameDir))
-%                 rmdir(nameDir)
-%             end
+            if isempty(getAllFiles(nameDir))
+                rmdir(nameDir)
+            end
+
         end
     end
     if foundKey == 0 % there is no original patient name in the filename, but we need to check whether there are no patient names within the file (for example in participants.tsv)
@@ -68,7 +74,7 @@ for i = 1:size(fileList,1)
     end
 end
 
-%% change content of specific files
+%% change content of specific files (uses cfg.reqFields defined in personalDataPath.m)
 reduceFiles = input('Do you want to reduce the variables in some specific files, and did you specify this in personalDataPath.m? [y/n]: ','s');
 
 if strcmp(reduceFiles,'y')
@@ -121,3 +127,18 @@ if strcmp(reduceFiles,'y')
         end
     end
 end
+
+%% change electrode positions in electrodes.tsv to MNI space (instead of positions on the individual brain)
+
+idx = contains(fileList,'electrodes.tsv')==0;
+
+fileList_elec = fileList;
+fileList_elec(idx) = [];
+
+for subj = 1:size(fileList_elec,1)
+
+    convertElec2MNI(myDataPath,fileList_elec{subj},key);
+
+end
+
+disp('Conversion to MNI space is completed.')
