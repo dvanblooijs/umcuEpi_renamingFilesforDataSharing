@@ -59,8 +59,8 @@ for i = 1:size(fileList,1)
                 mkdir(newnameDir)
             end
             
-            movefile(fileList{i},newname)
-%              copyfile(fileList{i},newname)
+%             movefile(fileList{i},newname)
+             copyfile(fileList{i},newname)
 
             % if directory is empty, delete directory
             if isempty(getAllFiles(nameDir))
