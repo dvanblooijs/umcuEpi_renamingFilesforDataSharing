@@ -18,7 +18,7 @@ if strcmp(nameExt,'.tsv')
     % load file
     Variable = readtable(filename,'FileType','text','Delimiter','\t');
 
-    % find all column names
+     % find all column names
     allFields = fieldnames(Variable);
 
     % check if any variable in each column contains the name that should be
@@ -33,8 +33,10 @@ if strcmp(nameExt,'.tsv')
         end
     end
 
+    Variable = bids_tsv_nan2na(Variable);
+
     % save file
-    writetable(Variable, filename, 'Delimiter', 'tab', 'FileType', 'text');
+    writetable(Variable, filename, 'Delimiter', 'tab', 'FileType', 'text');% save file
 
 elseif strcmp(nameExt,'.mat')
 
@@ -64,35 +66,10 @@ elseif strcmp(nameExt,'.json')
      % load file
     Variable = read_json(filename);
 
-    % find all fieldnames
-    allFields = fieldnames(Variable);
-
-    % check if any variable in each column contains the name that should be
-    % replaced
-    for i = 1:size(allFields,1)
-
-        if isstruct(Variable.(allFields{i}))
-
-            allsubFields = fieldnames(Variable.(allFields{i}));
-
-            for j = 1:size(allsubFields,1) % if it is a double etc. , than it cannot contain the original name of the patient
-                if isstring(Variable.(allFields{i}).(allsubFields{j}))
-                    idx = contains(Variable.(allFields{i}).(allsubFields{j}),indivkey);
-                    Variable.(allFields{i}).(allsubFields{j})(idx) = replace(Variable.(allFields{i}).(allsubFields{j})(idx),indivkey,renamekey);
-                end
-            end
-
-        else
-
-            if isstring(Variable.(allFields{i})) || ischar(Variable.(allFields{i})) % if it is a double etc. , than it cannot contain the original name of the patient
-                idx = contains(Variable.(allFields{i}),indivkey);
-                Variable.(allFields{i})(idx) = replace(Variable.(allFields{i})(idx),indivkey,renamekey);
-            end
-        end
-    end
+    newVariable = renameStruct(Variable,indivkey,renamekey);
 
     % save file
-    write_json(filename, Variable);
+    write_json(filename, newVariable);
 
 elseif strcmp(nameExt,'.TRC') && checkTRC
 
