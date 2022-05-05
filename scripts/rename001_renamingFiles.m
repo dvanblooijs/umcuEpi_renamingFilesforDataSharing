@@ -243,7 +243,7 @@ for ii = 1:size(fileList,1)
         [nameDir, nameFile, nameExt] = fileparts(fileList{ii});
 
         % rename VARIABLES and VARIABLE CONTENT
-        renameFileVar(fileList{ii},indivkey,renamekey,checkTRC)
+        renameFileContent(fileList{ii},indivkey,renamekey,checkTRC)
 
         % rename FILENAME and move file to new location
         newname = replace(fileList{ii},indivkey{:},renamekey{:});
@@ -257,7 +257,7 @@ for ii = 1:size(fileList,1)
         %             movefile(fileList{i},newname)
         copyfile(fileList{ii},newname)
         fprintf('Moved file to %s \n',newname)
-        
+
         % if directory is empty, delete directory
         if isempty(getAllFiles(nameDir))
             rmdir(nameDir)
@@ -270,7 +270,7 @@ for ii = 1:size(fileList,1)
             origkey = key(:,1); 
             newkey = key(:,2);
 
-            renameFileVar(fileList{ii},origkey,newkey,checkTRC)
+            renameFileContent(fileList{ii},origkey,newkey,checkTRC)
     end
 end
 
