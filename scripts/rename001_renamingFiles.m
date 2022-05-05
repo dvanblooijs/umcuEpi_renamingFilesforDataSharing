@@ -246,17 +246,22 @@ for ii = 1:size(fileList,1)
         renameFileContent(fileList{ii},indivkey,renamekey,checkTRC)
 
         % rename FILENAME and move file to new location
-        newname = replace(fileList{ii},indivkey{:},renamekey{:});
-        [newnameDir,newnameFile,newnameExt] = fileparts(newname);
+        if any(strcmp(nameExt,{'.vhdr','.vmkr','.eeg'}))
+            % do not copy because it is already written by
+            % renameFileContent!
+        else
+            newname = replace(fileList{ii},indivkey{:},renamekey{:});
+            [newnameDir,newnameFile,newnameExt] = fileparts(newname);
 
-        % make directory if it does not exist yet
-        if ~exist(newnameDir,'dir')
-            mkdir(newnameDir)
+            % make directory if it does not exist yet
+            if ~exist(newnameDir,'dir')
+                mkdir(newnameDir)
+            end
+
+            %             movefile(fileList{i},newname)
+            copyfile(fileList{ii},newname)
+            fprintf('Moved file to %s \n',newname)
         end
-
-        %             movefile(fileList{i},newname)
-        copyfile(fileList{ii},newname)
-        fprintf('Moved file to %s \n',newname)
 
         % if directory is empty, delete directory
         if isempty(getAllFiles(nameDir))
