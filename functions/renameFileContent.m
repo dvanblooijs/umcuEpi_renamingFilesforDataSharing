@@ -110,6 +110,12 @@ elseif strcmp(nameExt,'.TRC') && checkTRC
     % Close the file (it will automatically be saved)
     fclose(fid);
 
+elseif strcmp(nameExt,'.eeg') % it automatically writes .eeg, .vhdr and .vmkr
+    renameBrainvision(filename,indivkey, renamekey)
+
+elseif strcmp(nameExt,'.vhdr') || strcmp(nameExt,'vmkr')
+    % do nothing because it is already written in .eeg section
+
 else
     warning('Variables in %s have not been renamed, since it is not added yet to function renameFileContent',nameExt)
 end
