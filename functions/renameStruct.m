@@ -1,38 +1,46 @@
-
 function newVariable = renameStruct(Variable,indivkey,renamekey)
-    % find all fieldnames
-    fieldNames = unnest_fields(Variable, 'Variable');
 
-    % check content of fieldnames in struct
-    for i = 1:size(fieldNames,1)
+% this function:
+% - finds all fieldnames
+% - checks whether a fieldname contains any name that should be renamed
+%   before sharing the data externally
+% - checks whether the content contains any name that should be renamed
 
-        fieldparts = strsplit(fieldNames{i},'.');
+% find all fieldnames
+fieldNames = unnest_fields(Variable, 'Variable');
 
-        if isstring(getfield(Variable,fieldparts{2:end})) || ischar(getfield(Variable,fieldparts{2:end}))
-            if any(contains(getfield(Variable,fieldparts{2:end}),indivkey))
+% VARIABLE NAMES: check fieldnames
+if any(contains(fieldNames,indivkey))
+    newVariable = struct();
 
-                newname = replace(getfield(Variable,fieldparts{2:end}),indivkey,renamekey);
-                Variable = setfield(Variable,fieldparts{2:end},newname);
-            end
+    % run through all fieldnames
+    for ii = 1:size(fieldNames,1)
+
+        fieldparts = strsplit(fieldNames{ii},'.');
+
+        if contains(fieldNames{ii},indivkey)
+            newname = replace(fieldNames{ii},indivkey,renamekey);
+            fieldpartsnew = strsplit(newname,'.');
+            newVariable = setfield(newVariable,fieldpartsnew{2:end},getfield(Variable,fieldparts{2:end}));
+        else
+            newVariable = setfield(newVariable,fieldparts{2:end},getfield(Variable,fieldparts{2:end}));
         end
     end
+else
+    newVariable = Variable;
+end
 
-    % check fieldnames
-    if any(contains(fieldNames,indivkey))
-        newVariable = struct();
-        for i = 1:size(fieldNames,1)
+% VARIABLE CONTENT: check content of fieldnames in struct
+for ii = 1:size(fieldNames,1)
 
-            fieldparts = strsplit(fieldNames{i},'.');
+    fieldparts = strsplit(fieldNames{ii},'.');
 
-            if contains(fieldNames{i},indivkey)
-                newname = replace(fieldNames{i},indivkey,renamekey);
-                fieldpartsnew = strsplit(newname,'.');
-                newVariable = setfield(newVariable,fieldpartsnew{2:end},getfield(Variable,fieldparts{2:end}));
-            else
-                newVariable = setfield(newVariable,fieldparts{2:end},getfield(Variable,fieldparts{2:end}));
-            end
+    if isstring(getfield(Variable,fieldparts{2:end})) || ischar(getfield(Variable,fieldparts{2:end}))
+        if any(contains(getfield(Variable,fieldparts{2:end}),indivkey))
+
+            newname = replace(getfield(Variable,fieldparts{2:end}),indivkey,renamekey);
+            newVariable = setfield(Variable,fieldparts{2:end},newname);
         end
-    else
-        newVariable = Variable;
-
     end
+end
+

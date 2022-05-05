@@ -6,9 +6,8 @@ function renameFileVar(filename,indivkey,renamekey,checkTRC)
 % May 2021
 
 %\\\ UPDATES \\\
-% author: Eline Schaft
-% December 2021
-% added trc files in this script
+% Eline Schaft - December 2021 - added trc files in this script
+% Dorien van Blooijs - May 2022 - simplified script to make it less complex
 
 [~,~, nameExt] = fileparts(filename);
 
@@ -18,18 +17,27 @@ if strcmp(nameExt,'.tsv')
     % load file
     Variable = readtable(filename,'FileType','text','Delimiter','\t');
 
-     % find all column names
-    allFields = fieldnames(Variable);
+    % find all column names (field names)
+    allFields = Variable.Properties.VariableNames;
 
-    % check if any variable in each column contains the name that should be
-    % replaced
-    for i = 1:size(Variable,2)
+    % VARIABLE NAMES: check if any fieldname contains a name that should be renamed
+    for jj = 1:size(allFields,2)
+        for ii = 1:size(indivkey,1)
+            if contains(allFields{jj},indivkey{ii})
+                allFields{jj} = replace(allFields{jj},indivkey{ii},renamekey{ii});
+                Variable.Properties.VariableNames{jj} = allFields{jj};
+            end
+        end
+    end
 
-        if iscellstr(Variable.(allFields{i})) %#ok<ISCLSTR>
-
-            idx = contains(Variable.(allFields{i}),indivkey);
-            Variable.(allFields{i})(idx) = replace(Variable.(allFields{i})(idx),indivkey,renamekey);
-
+    % VARIABLE CONTENT: check if any variable in each column contains the
+    % name that should be replaced
+    for jj = 1:size(Variable,2)
+        for ii = 1:size(indivkey,1)
+            if iscellstr(Variable.(allFields{jj})) %#ok<ISCLSTR>
+                idx = contains(Variable.(allFields{jj}),indivkey{ii});
+                Variable.(allFields{jj})(idx) = replace(Variable.(allFields{jj})(idx),indivkey{ii},renamekey{ii});
+            end
         end
     end
 
@@ -46,15 +54,17 @@ elseif strcmp(nameExt,'.mat')
     % find all fields
     allFields = fieldnames(Variable);
 
-    % check if any field contains the name that should be replaced
-    for i = 1:size(allFields,1)
-        if  isstring(Variable.(allFields{i})) || ischar(Variable.(allFields{i}))
+    % VARIABLE CONTENT: check if any field contains the name that should be replaced
+    for jj = 1:size(allFields,1)
+        for ii = 1:size(indivkey,1)
+            if  isstring(Variable.(allFields{jj})) || ischar(Variable.(allFields{jj}))
 
-            Variable.(allFields{i}) = replace(Variable.(allFields{i}),indivkey,renamekey);
+                Variable.(allFields{jj}) = replace(Variable.(allFields{jj}),indivkey{ii},renamekey{ii});
 
-        elseif iscellstr(Variable.(allFields{i}))
-            idx = contains(Variable.(allFields{i}),indivkey);
-            Variable.(allFields{i})(idx) = replace(Variable.(allFields{i})(idx),indivkey,renamekey);
+            elseif iscellstr(Variable.(allFields{jj}))
+                idx = contains(Variable.(allFields{jj}),indivkey{ii});
+                Variable.(allFields{jj})(idx) = replace(Variable.(allFields{jj})(idx),indivkey{ii},renamekey{ii});
+            end
         end
     end
 
@@ -66,7 +76,11 @@ elseif strcmp(nameExt,'.json')
      % load file
     Variable = read_json(filename);
 
-    newVariable = renameStruct(Variable,indivkey,renamekey);
+    % check both VARIABLE NAMES and VARIABLE CONTENT
+    newVariable = Variable;
+    for ii = 1:size(indivkey,1)
+        newVariable = renameStruct(newVariable,indivkey{ii},renamekey{ii});
+    end
 
     % save file
     write_json(filename, newVariable);
@@ -97,10 +111,7 @@ elseif strcmp(nameExt,'.TRC') && checkTRC
     fclose(fid);
 
 else
-    warning('Variables in %s have not been renamed, since it is not added yet to function renameFileVar',nameExt)
+    warning('Variables in %s have not been renamed, since it is not added yet to function renameFileContent',nameExt)
 end
-
-
-
 
 end
