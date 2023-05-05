@@ -2,7 +2,7 @@
 %% THIS IS AN EXAMPLE FILE
 % copy this one and fill in your own
 
-function [localDataPath,cfg] = personalDataPath_example()
+function [localDataPath,cfg] = rename_personalDataPath_example()
 
 % function that contains local data path, is ignored in .gitignore
 

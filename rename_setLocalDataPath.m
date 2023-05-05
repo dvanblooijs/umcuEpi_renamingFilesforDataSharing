@@ -1,5 +1,5 @@
 
-function [localDataPath,cfg] = setLocalDataPath(varargin)
+function [localDataPath,cfg] = rename_setLocalDataPath(varargin)
 
 % function LocalDataPath = setLocalDataPath(varargin)
 % Return the path to the root CCEP  directory and add paths in this repo
@@ -10,17 +10,16 @@ function [localDataPath,cfg] = setLocalDataPath(varargin)
 % when adding personalDataPath, the following function should be in the
 % root of this repo:
 %
-% function localDataPath = personalDataPath()
+% function localDataPath = rename_personalDataPath()
 %     'localDataPath = [/my/path/to/data];
 %
 % this function is ignored in .gitignore
 %
-% dhermes, 2020, Multimodal Neuroimaging Lab
 % dvanblooijs, 2020, UMCU_EpiLAB
 
 if isempty(varargin)
 
-    rootPath = which('setLocalDataPath');
+    rootPath = which('rename_setLocalDataPath');
     RepoPath = fileparts(rootPath);
     
     % add path to functions
@@ -32,17 +31,17 @@ if isempty(varargin)
 elseif ~isempty(varargin)
     % add path to data
     if isstruct(varargin{1})
-        localDataPath = personalDataPath(varargin{1});
+        localDataPath = rename_personalDataPath(varargin{1});
     else
-        if varargin{1}==1 && exist('personalDataPath','file')
+        if varargin{1}==1 && exist('rename_personalDataPath','file')
             
-            [localDataPath,cfg] = personalDataPath();
+            [localDataPath,cfg] = rename_personalDataPath();
             
-        elseif varargin{1}==1 && ~exist('personalDataPath','file')
+        elseif varargin{1}==1 && ~exist('rename_personalDataPath','file')
             
-            sprintf(['add personalDataPath function to add your localDataPath:\n'...
+            sprintf(['add rename_personalDataPath function to add your localDataPath:\n'...
                 '\n'...
-                'function localDataPath = personalDataPath()\n'...
+                'function localDataPath = rename_personalDataPath()\n'...
                 'localDataPath.input = [/my/path/to/data];\n'...
                 'localDataPath.output = [/my/path/to/output];\n'...
                 '\n'...
@@ -52,7 +51,7 @@ elseif ~isempty(varargin)
     end
     
     % add path to functions
-    rootPath = which('setLocalDataPath');
+    rootPath = which('rename_setLocalDataPath');
     RepoPath = fileparts(rootPath);
     addpath(genpath(RepoPath));
     

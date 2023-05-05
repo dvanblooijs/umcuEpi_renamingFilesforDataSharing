@@ -2,7 +2,7 @@
 % author: Dorien van Blooijs
 % date: May 2021
 
-% first, several options are programmed to: 
+% first, several OPTIONS are programmed to: 
 % 1. change participants.tsv to contain only the participants that are
 %    present in the specific folder for sharing
 % 2. change scans.tsv to contain only the eeg-files that are present in the
@@ -13,11 +13,24 @@
 % 5. change content of specific files (for example, not sharing SOZ in
 %    electrodes.tsv)
 
+% REQUIRED
 % at the end of the script, the actual renaming of files is programmed
 
-clc
+%% set paths
 clear
-[myDataPath,cfg] = setLocalDataPath(1);
+close all
+clc
+
+% add current path from folder which contains this script
+rootPath = matlab.desktop.editor.getActiveFilename;
+RepoPath = fileparts(rootPath);
+matlabFolder = strfind(RepoPath,'matlab');
+addpath(genpath(RepoPath(1:matlabFolder+6)));
+
+[myDataPath, cfg] = rename_setLocalDataPath(1);
+
+% housekeeping 
+clear rootPath RepoPath matlabFolder
 
 %% load key for renaming:
 % this file should be named key.xlsx, and in the first column, it should
@@ -31,7 +44,7 @@ key = readcell(fullfile(dirName,'key.xlsx'));
 
 fileList = getAllFiles(dirName);
 
-%% OPTIONAL: change content of participants.tsv to contain only the participants in this specific folder for sharing
+%% 1. OPTIONAL: change content of participants.tsv to contain only the participants in this specific folder for sharing
 
 idx_particip_tsv = contains(fileList,'participants.tsv');
 particip_tsv = readtable(fileList{idx_particip_tsv},'FileType','text','Delimiter','\t');
@@ -49,7 +62,7 @@ for ii = 1:size(particip_tsv,1)
         % participants.tsv
         subContent = dir(fullfile(myDataPath.shareFolder,particip_tsv.participant_id{ii}));
         idx_ses = contains({subContent(:).name},'ses-');
-        ses = subContent(idx_ses).name;
+        ses = {subContent(idx_ses).name};
 
         if sum(contains(ses,particip_tsv.session(ii))) == 1
             keep = [keep, ii]; %#ok<AGROW> 
@@ -66,7 +79,7 @@ writetable(particip_tsv, fileList{idx_particip_tsv}, 'Delimiter', 'tab', 'FileTy
 % housekeeping
 clear del dirNam folderContent idx_particip idx_particip_tsv idx_ses ii keep particip particip_tsv ses subContent
 
-%% OPTIONAL: change content of scans.tsv if not all scans are going to be shared
+%% 2. OPTIONAL: change content of scans.tsv if not all scans are going to be shared
 
 % find all scans.tsv files
 idx_scans_tsv = find(contains(fileList,'scans.tsv')==1);
@@ -103,7 +116,7 @@ end
 % housekeeping
 clear del dirName filename folder folderContent idx_scans idx_scans_tsv ii jj keep scans scans_tsv 
 
-%% OPTIONAL: rename datasetDescriptor
+%% 3. OPTIONAL: rename datasetDescriptor
 
 idx_dataDesc = contains(fileList,'dataset_description');
 dataDesc = read_json(fileList{idx_dataDesc});
@@ -116,7 +129,7 @@ write_json(fileList{idx_dataDesc}, dataDesc);
 % housekeeping
 clear dataDesc idx_dataDesc
 
-%% OPTIONAL: change electrode positions in electrodes.tsv to MNI space (instead of positions on the individual brain)
+%% 4. OPTIONAL: change electrode positions in electrodes.tsv to MNI space (instead of positions on the individual brain)
 % THIS IS REQUIRED FOR SHARING DATA IN PUBLICLY AVAILABLE DATASETS!!!
 
 idx = contains(fileList,'electrodes.tsv')==0;
@@ -135,7 +148,7 @@ disp('Conversion to MNI space is completed.')
 % housekeeping
 clear fileList_elec idx subj
 
-%% OPTIONAL: change content of specific files (uses cfg.reqFields defined in personalDataPath.m)
+%% 5. OPTIONAL: change content of specific files (uses cfg.reqFields defined in personalDataPath.m)
 reduceFiles = input('Do you want to reduce the variables in some specific files, and did you specify this in personalDataPath.m? [y/n]: ','s');
 
 if strcmp(reduceFiles,'y')
