@@ -18,7 +18,7 @@ desktop.ini
 *.asv
 
 # No personalDataPath
-personalDataPath.m
+rename_personalDataPath.m
 
 # No pictures
 *.png
