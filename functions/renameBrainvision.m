@@ -1,8 +1,14 @@
 function renameBrainvision(filename,indivkey, renamekey)
 
-fileorigEEG = filename;
-filenewEEG = replace(fileorigEEG,indivkey{:},renamekey{:});
-filenewVHDR = replace(filenewEEG,'.eeg','.vhdr');
+if contains(filename,indivkey{:})
+    fileorigEEG = filename;
+    filenewEEG = replace(fileorigEEG,indivkey{:},renamekey{:});
+    filenewVHDR = replace(filenewEEG,'.eeg','.vhdr');
+elseif contains(filename,renamekey{:})
+    filenewEEG = filename;
+    filenewVHDR = replace(filenewEEG,'.eeg','.vhdr');
+%     fileorigEEG = replace(filenewEEG,renamekey{:},indivkey{:});
+end
 
 %% create Brainvision format from TRC
 
