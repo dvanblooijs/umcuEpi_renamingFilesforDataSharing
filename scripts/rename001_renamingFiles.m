@@ -77,7 +77,7 @@ particip_tsv(del,:) = [];
 writetable(particip_tsv, fileList{idx_particip_tsv}, 'Delimiter', 'tab', 'FileType', 'text');% save file
 
 % housekeeping
-clear del dirNam folderContent idx_particip idx_particip_tsv idx_ses ii keep particip particip_tsv ses subContent
+clear del folderContent idx_particip idx_particip_tsv idx_ses ii keep particip particip_tsv ses subContent
 
 %% 2. OPTIONAL: change content of scans.tsv if not all scans are going to be shared
 
@@ -114,7 +114,7 @@ for ii = 1: size(idx_scans_tsv,1) % for each scans.tsv file
 end
 
 % housekeeping
-clear del dirName filename folder folderContent idx_scans idx_scans_tsv ii jj keep scans scans_tsv 
+clear del filename folder folderContent idx_scans idx_scans_tsv ii jj keep scans scans_tsv 
 
 %% 3. OPTIONAL: rename datasetDescriptor
 
@@ -173,7 +173,9 @@ if strcmp(reduceFiles,'y')
 
                         % add all columns that are required
                         for k = 1:size(cfg(jj).reqFields,2)
+                            if any(contains(fieldnames(Variable),cfg(jj).reqFields{k}))
                             newVariable.(cfg(jj).reqFields{k}) = Variable.(cfg(jj).reqFields{k});
+                            end
                         end
 
                         % make struct into table
@@ -259,7 +261,7 @@ for ii = 1:size(fileList,1)
         renameFileContent(fileList{ii},indivkey,renamekey,checkTRC)
 
         % rename FILENAME and move file to new location
-        if any(strcmp(nameExt,{'.vhdr','.vmkr','.eeg'}))
+        if any(strcmp(nameExt,{'.vhdr','.vmrk','.eeg'}))
             % do not copy because it is already written by
             % renameFileContent!
         else
@@ -285,10 +287,27 @@ for ii = 1:size(fileList,1)
             % filename, but we need to check whether there are no patient 
             % names within the file (for example in scans.tsv)
         
-            origkey = key(:,1); 
-            newkey = key(:,2);
+            % run through all keys to find whether this file has already
+            % been renamed (for example in an earlier attempt)
+            [nameDir, nameFile, nameExt] = fileparts(fileList{ii});
+            foundnewKey = 0;
+            for jj = 1:size(key,1)
+                if contains(nameFile,key(jj,2))
+                    foundnewKey = 1; % in case there is a matching key
 
-            renameFileContent(fileList{ii},origkey,newkey,checkTRC)
+                    break
+                end
+            end
+
+            if foundnewKey == 0 % if there is no recoded patient name in 
+                % the filename, we need to check whether there are no 
+                % patient names within the file
+
+                origkey = key(:,1);
+                newkey = key(:,2);
+
+                renameFileContent(fileList{ii},origkey,newkey,checkTRC)
+            end
     end
 end
 
