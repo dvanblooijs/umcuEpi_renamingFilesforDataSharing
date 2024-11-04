@@ -88,6 +88,9 @@ for ii = 1: size(idx_scans_tsv,1) % for each scans.tsv file
     % read scans.tsv
     scans_tsv = readtable(fileList{idx_scans_tsv(ii)},'FileType','text','Delimiter','\t');
 
+    % change aquisition time to uuuu-MM-DD HH:mm:ss
+    scans_tsv.acq_time.Format = "uuuu-MM-dd'T'HH:mm:ss.SSS";
+
     % find the eeg-files for each specific subject
     folder = fileparts(fileList{idx_scans_tsv(ii)});
     folderContent = dir(fullfile(folder,'ieeg'));
@@ -140,6 +143,27 @@ fileList_elec(idx) = [];
 for subj = 1:size(fileList_elec,1)
 
     convertElec2MNI(myDataPath,fileList_elec{subj});
+
+end
+
+disp('Conversion to MNI space is completed.')
+
+% housekeeping
+clear fileList_elec idx subj
+
+%% 4. OPTIONAL: check whether all NaNs are changed to n/a in electrodes.tsv
+
+idx = contains(fileList,'electrodes.tsv')==0;
+
+fileList_elec = fileList;
+fileList_elec(idx) = [];
+
+for subj = 1:size(fileList_elec,1)
+    elec_tsv = readtable(fileList_elec{subj},'FileType','text','Delimiter','\t');
+
+    elec_tsv = bids_tsv_nan2na(elec_tsv);
+
+    writetable(elec_tsv, fileList_elec{subj}, 'Delimiter', 'tab', 'FileType', 'text');% save file
 
 end
 
